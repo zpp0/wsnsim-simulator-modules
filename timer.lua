@@ -2,10 +2,13 @@ declare_module{
    name = "Timer",
    author = "Alexander Yarygin",
    type = "hardware",
-   description = "",
-   params = { },
+   description = "Точный таймер",
    interface = {
-      functions = {},
+      functions = {
+         { name = "start", info = "запустить таймер",
+           args = { { name = "timeout", type = "uint64", info = "время, через которое произойдет прервание" },
+                    { name = "type", type = "string", info = "тип прерывания" } } }
+      },
       events = {
          { name = "timerInterrupt",
            params = { { name="NodeID", type="uint16" },
@@ -13,7 +16,6 @@ declare_module{
 
       }
    },
-   dependencies = { }
 }
 
 Timer = {}

@@ -2,12 +2,10 @@ declare_module{
    name = "Scene",
    author = "Alexander Yarygin",
    type = "environment",
-   description = "",
+   description = "Двухмерная сцена",
    params = {
-      { name = "test", type = "bool", info = "X", default = true },
-      { name = "xSize", type = "double", info = "X", default = 100.0 },
-      { name = "asasd", type = "string", info = "asd", default = "as12" },
-      { name = "ySize", type = "double", info = "Y" },
+      { name = "xSize", type = "double", info = "размер среды по оси X", default = 100.0 },
+      { name = "ySize", type = "double", info = "размер среды по оси Y", default = 100.0 },
       { name = "nodes", type = "nodes" },
       { name = "coords", type = "table",
         args = { columns = "3", columnName1 = "NodeID", columnName2 = "X", columnName3 = "Y" } }
@@ -16,7 +14,11 @@ declare_module{
       functions = {
          { name = "coord", info = "Возвращает координату узла", resultType = "double[2]",
            args = {
-              { name = "NodeID", type = "uint16" } } }
+              { name = "NodeID", type = "uint16" } } },
+         { name = "distance", info = "возвращает расстояние между двуми узлами",
+           args = {
+              { name = "NodeID1", type = "uint16" },
+              { name = "NodeID2", type = "uint16" } } }
       },
       events = {
          { name = "nodePowerUp",
@@ -25,8 +27,7 @@ declare_module{
                       { name = "coordx", type = "double" },
                       { name = "coordy", type = "double" } } }
       }
-   },
-   dependencies = { }
+   }
 }
 
 Scene = { }

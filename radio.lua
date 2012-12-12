@@ -2,10 +2,17 @@ declare_module{
    name = "Radio",
    author = "Alexander Yarygin",
    type = "environment",
-   description = "",
-   params = { },
+   description = "Радиоканал",
    interface = {
-      functions = {},
+      functions = {
+         { name = "send", info = "отправить сообщение в канал",
+           args = {
+              { name = "sender", type = "uint16", info = "ID узла отправителя" },
+              { name = "message", type = "byteArray", info = "тело сообщения" } } },
+         { name = "aroundPower", info = "получить текущую мощность сигнала на узле",
+           args = {
+              { name = "node", type = "uint16", info = "ID узла" } } }
+      },
       events = {
          { name = "newMessageInChannel",
            params = { { name="NodeID", type="uint16" },
@@ -19,9 +26,39 @@ declare_module{
    },
    dependencies = {
       { name = "Scene", type = "environment",
-        interface = { } },
+        interface = {
+           functions = {
+              { name = "distance", info = "возвращает расстояние между двуми узлами",
+                args = {
+                   { name = "NodeID1", type = "uint16" },
+                   { name = "NodeID2", type = "uint16" } } }
+           },
+           events = {
+              { name = "nodePowerUp",
+                info = "Включение узла",
+                params = { { name = "NodeID", type = "uint16" } } } }
+        },
+     },
       { name = "TRX", type = "hardware",
-        interface = { } },
+        interface = {
+           functions = {
+              { name = "state", info = "возвращает состояние приемника-передатчика" },
+              { name = "TXPower", info = "возвращает мощность приемника-передатчика" },
+              { name = "RXSensivity", info = "возвращает чувствительность приемника-передатчика" }
+           },
+           events = {
+              { name = "collision",
+                params = { { name = "NodeID", type = "uint16" } } },
+              { name = "messageDropped",
+                params = {
+                   { name = "NodeID", type = "uint16" },
+                   { name = "message", type = "ByteArray" } } },
+              { name = "MessageReceived",
+                params = {
+                   { name = "NodeID", type = "uint16" },
+                   { name = "message", type = "ByteArray" } } },
+           }
+     } },
    }
 }
 
@@ -43,16 +80,19 @@ function Radio:init(params, interfaces)
    Simulator.handleEvent{ author = "Scene",
                           event = "nodePowerUp",
                           handler = "newNode" }
-   Simulator.handleEvent{ event = "collision",
-                          handler = "cleanLocalChannel"}
-   Simulator.handleEvent{ event = "messageDropped",
-                          handler = "cleanLocalChannel"}
-   Simulator.handleEvent{ event = "MessageReceived",
-                          handler = "cleanLocalChannel"}
+   Simulator.handleEvent{ author = "TRX",
+                          event = "collision",
+                          handler = "cleanLocalChannel" }
+   Simulator.handleEvent{ author = "TRX",
+                          event = "messageDropped",
+                          handler = "cleanLocalChannel" }
+   Simulator.handleEvent{ author = "TRX",
+                          event = "MessageReceived",
+                          handler = "cleanLocalChannel" }
 end
 
 function Radio:send(sender, message)
-   for i = 0, #self.links[sender] do
+   for i = 1, #self.links[sender] do
       local listener = self.links[sender][i]
       local TRX = self.TRXs[listener]
 
@@ -112,6 +152,9 @@ function Radio:aroundPower(node)
 end
 
 function Radio:newNode(node)
+   print(node)
+   print(debug.traceback())
+
    self.links[node] = {}
    self.localChannels[node] = {}
 

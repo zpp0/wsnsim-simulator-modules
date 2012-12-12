@@ -2,22 +2,37 @@ declare_module{
    name = "APL",
    author = "Alexander Yarygin",
    type = "software",
-   description = "",
-   params = { },
-   interface = { },
+   description = "Простая и бесполезная программа узла",
    dependencies = {
       { name = "TRX", type = "hardware",
-        interface = { } },
+        interface = {
+           functions = {
+              { name = "CCA", info = "возвращает true, если канал свободен, false если занят" },
+              { name = "startTX", info = "начать передачу сообщения",
+                args = { { name = "message", type = "byteArray" } } },
+           },
+     } },
       { name = "Timer", type = "hardware",
         interface = {
            functions = {
               { name = "start", info = "запускает таймер",
                 args = {
+                   { name = "timeout", type = "uint64", info = "время, через которое произойдет прервание" },
                    { name = "interruptType", type = "string" } } }
+           },
+           events = {
+              { name = "timerInterrupt",
+                params = { { name="Type", type="string" } } },
            }
-     } },
+        }
+     },
       { name = "Scene", type = "environment",
-        interface = {} },
+        interface = {
+           events = {
+              { name = "nodePowerUp",
+                info = "Включение узла" }
+           },
+     } },
    }
 }
 

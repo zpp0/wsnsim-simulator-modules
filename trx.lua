@@ -2,13 +2,22 @@ declare_module{
    name = "TRX",
    author = "Alexander Yarygin",
    type = "hardware",
-   description = "Приемник-передатчик стандарта IEEE802.15.4",
+   description = "Радио приемник-передатчик",
    params = {
       { name = "RXSensivity", type = "double", info = "Чувствительность приемника" },
       { name = "TXPower", type = "double", info = "Мощность передатчика" }
    },
    interface = {
-      functions = {},
+      functions = {
+         { name = "state", info = "возвращает состояние приемника-передатчика" },
+         { name = "TXPower", info = "возвращает мощность приемника-передатчика" },
+         { name = "RXSensivity", info = "возвращает чувствительность приемника-передатчика" },
+         { name = "CCA", info = "возвращает true, если канал свободен, false если занят" },
+         { name = "setPower", info = "изменяет состояние приемника-передатчика. Включает, если аргумент равен true, выключает, если false",
+           args = { { name = "state", type = "bool" } } },
+         { name = "startTX", info = "начать передачу сообщения",
+           args = { { name = "message", type = "byteArray" } } },
+      },
       events = {
          { name = "messageDropped",
            params = {
@@ -58,7 +67,23 @@ declare_module{
    },
    dependencies = {
       { name = "Radio", type = "environment",
-        interface = { } },
+        interface = {
+           functions = {
+              { name = "send", info = "отправить сообщение в канал",
+                args = {
+                   { name = "sender", type = "uint16", info = "ID узла отправителя" },
+                   { name = "message", type = "byteArray", info = "тело сообщения" } } },
+              { name = "aroundPower", info = "получить текущую мощность сигнала на узле",
+                args = {
+                   { name = "node", type = "uint16", info = "ID узла" } } }
+           },
+           events = {
+              { name = "newMessageInChannel",
+                params = { { name="message", type="ByteArray" },
+                           { name="RSSI", type="double" } } },
+           }
+        },
+     },
    }
 }
 
@@ -82,7 +107,7 @@ function TRX:init(params, interfaces)
 
    self.mstate = "Free"
 
-   Simulator.handleEvent{ author = "Scene",
+   Simulator.handleEvent{ author = "Radio",
                           event = "newMessageInChannel",
                           handler = "listen" }
 
