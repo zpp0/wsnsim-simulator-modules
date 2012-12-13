@@ -144,7 +144,7 @@ function TRX:startTX(message)
 
    Simulator.postEvent{ author = self,
                         event = "SFD_TX_Up",
-                        args = { message, self.TXPower } }
+                        args = { message, self.mTXPower } }
 
    self.radio.send(self.parentNode, message)
 
