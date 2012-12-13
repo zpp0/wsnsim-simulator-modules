@@ -92,9 +92,9 @@ function Radio:init(params, interfaces)
 end
 
 function Radio:send(sender, message)
-   for i = 1, #self.links[sender] do
-      local listener = self.links[sender][i]
-      local TRX = self.TRXs[listener]
+   for i, value in ipairs(self.links[sender]) do
+      local listener = i
+      local TRX = self.TRXs[i]
 
       if (TRX.state() ~= "TXON") then
          local rssi = self:rssi(sender, listener)
