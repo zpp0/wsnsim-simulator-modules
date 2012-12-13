@@ -56,7 +56,7 @@ function Scene:coord(Node)
 end
 
 function Scene:distance(Node1, Node2)
-   print(Node1, Node2)
+   -- print(Node1, Node2)
    local coord1 = self.coords[Node1]
    local coord2 = self.coords[Node2]
 

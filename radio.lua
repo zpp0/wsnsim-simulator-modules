@@ -152,9 +152,6 @@ function Radio:aroundPower(node)
 end
 
 function Radio:newNode(node)
-   print(node)
-   print(debug.traceback())
-
    self.links[node] = {}
    self.localChannels[node] = {}
 
